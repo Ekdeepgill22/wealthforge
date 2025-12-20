@@ -1,0 +1,91 @@
+research_task:
+  description: >
+    Conduct a thorough research about {topic} (Symbol: {symbol}, Sector:
+    {sector}, Region: {region}, Horizon: {investment_horizon}, Risk Profile: {risk_profile}).
+    Make sure you find the most interesting and relevant insights given the current
+    year is {current_year}.
+  expected_output: >
+    A list with 4 to 5 bullet points of the most relevant information about
+    {topic} (Symbol: {symbol}, Sector: {sector}, Region: {region}, Horizon: {investment_horizon},
+    Risk Profile: {risk_profile}).
+  agent: researcher
+
+analysis_task:
+  description: >
+    Analyze the research findings about {topic} (Symbol: {symbol}, Sector:
+    {sector}, Region: {region}, Horizon: {investment_horizon}, Risk Profile: {risk_profile})
+    and derive key trends, patterns, and implications that can inform decision-making.
+  expected_output: >
+    A structured summary highlighting 3 major insights with supporting data.
+  agent: analyst
+
+advisory_task:
+  description: >
+    Provide expert investment advisory notes on {topic} (Symbol: {symbol},
+    Sector: {sector}, Region: {region}, Horizon: {investment_horizon}, Risk Profile:
+    {risk_profile}), including when to invest, hold, or divest based on the insights
+    gathered.
+  expected_output: >
+    3 actionable advisory recommendations for investors.
+  agent: advisor
+
+risk_evaluation_task:
+  description: >
+    Evaluate the potential risks related to {topic} (Symbol: {symbol},
+    Sector: {sector}, Region: {region}, Horizon: {investment_horizon}, Risk Profile:
+    {risk_profile}) and categorize them into financial, market, and operational dimensions.
+  expected_output: >
+    A list of 3 major risks with mitigation strategies for each
+  agent: risk_manager
+
+trend_forecasting_task:
+  description: >
+    Forecast upcoming trends in {topic} (Symbol: {symbol}, Sector: {sector},
+    Region: {region}, Horizon: {investment_horizon}, Risk Profile: {risk_profile})
+    for the next 1 to 3 years based on current data, research, and market indicators.
+  expected_output: >
+    A timeline with 3 predicted trends and their expected impact.
+  agent: trend_predictor
+
+educator_task:
+  description: >
+    Develop an easy-to-understand learning module for {topic} (Symbol:
+    {symbol}, Sector: {sector}, Region: {region}, Horizon: {investment_horizon}, Risk
+    Profile: {risk_profile}). Ensure the content is accessible, structured, and engaging
+    for learners with varying levels of expertise. Incorporate real-world examples
+    and practical exercises where applicable.
+  expected_output: >
+    A structured lesson plan with:
+      - 3 key learning objectives
+      - 2 practical examples
+      - 1 short quiz or activity
+  agent: educator
+
+compliance_task:
+  description: >
+    Review the proposed plan, strategy, or document for {topic} (Symbol:
+    {symbol}, Sector: {sector}, Region: {region}, Horizon: {investment_horizon}, Risk
+    Profile: {risk_profile}). Identify any risks, violations, or misalignments with
+    industry standards, regulatory requirements, and organizational policies. Suggest
+    improvements to ensure compliance and minimize potential risks.
+  expected_output: >
+    A compliance review report containing:
+      - 2 to 3 key compliance risks
+      - Recommended actions to fix or mitigate them
+      - Final compliance status (Pass / Needs Revision)
+  agent: compliance_officer
+
+report_task:
+  description: >
+    Prepare a professional and polished report on {topic} (Symbol: {symbol},
+    Sector: {sector}, Region: {region}, Horizon: {investment_horizon}, Risk Profile:
+    {risk_profile}). The report should  synthesize contributions from the researcher,
+    educator, and compliance officer,  ensuring accuracy, clarity, and actionable
+    recommendations. It must follow  a structured format (Executive Summary, Key Insights,
+    Compliance Observations,  Recommendations, and Conclusion).
+
+  expected_output: >
+    A detailed, board-ready report in a professional tone,  formatted
+    for readability with clear sections, bullet points  for recommendations, and an
+    emphasis on actionable outcomes.
+  agent: reporter
