@@ -7,317 +7,179 @@ import warnings
 from datetime import datetime
 from pymongo import MongoClient
 from dotenv import load_dotenv
-from PIL import Image
 load_dotenv()
-
 from niveshwala.crew import NiveshWala
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
     
-MONGO_DB_URI = st.secrets['MONGO_DB_URI']
+# Section1 - Streamlit Page Configuration
+st.set_page_config(
+    page_title="WealthForge",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)    
 
 # Section2 - Database Setup
+MONGO_DB_URI = st.secrets['MONGO_DB_URI']
 client = MongoClient(MONGO_DB_URI)
 db = client['NiveshWala']
 users_collection = db['users']
 chat_collection = db['chats']
-logo = Image.open("logo.png")
 
-# Section4 - Streamlit Page Configuration
-st.set_page_config(page_title="Niveshwallah")
-st.set_page_config(
-    page_title="Niveshwallah",
-    page_icon=logo,
-    layout="wide",
-    initial_sidebar_state="expanded"
+# Section 3 - Page styling
+st.markdown(
+    """
+    <style>
+    .headercontainer{
+    text-align: center;          
+    width: 100%;
+    margin-bottom: 0.5rem;
+    }
+    .wealthforge-title {
+        color: #6EC1E4; /* light blue */
+        font-size: 4.5rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        margin-top: -4rem; 
+    }
+    .hero-caption {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: #444;
+    }
+    .hero-subtext {
+        font-size: 1rem;
+        color: #666;
+        max-width: 720px;
+        margin: 0 auto;
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+# Title
+st.markdown(
+    """
+    <div class="headercontainer">
+    <div class="wealthforge-title">WealthForge</div>
+     <div class="hero-caption"> 
+     AI-Powered Financial Guidance for Everyone - From Beginners to Investors
+    </div>
+    <div class="hero-subtext">
+    Make informed investment decisions with intelligent and personalized recommendations.
+    </div>
+    </div>
+    """    
+    ,unsafe_allow_html=True
+)
+# cards
+st.markdown(
+    """
+    <style>
+        .cards-container {
+            margin-top: -1rem;
+        }
+
+        .prompt-card {
+            background: #f7f9fc;
+            border-radius: 14px;
+            padding: 1.1rem 1.4rem;
+            height: 100%;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 1px solid #e6e9ef;
+        }
+
+        .prompt-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-color: #d0d7e2;
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            color: #1f2937;
+        }
+
+        .card-text {
+            font-size: 0.92rem;
+            color: #4b5563;
+            line-height: 1.45;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
 )
 
-# Custom CSS for beautiful UI
-st.markdown("""
-<style>
-    /* Hero section styling - compact */
-    .hero-section {
-        background: linear-gradient(135deg, #D91A1A 0%, #8F1D1E 100%);
-        padding: 1rem 1rem;
-        border-radius: 10px;
-        margin-bottom: 1rem;
-        line-height: 0.5rem;
-        box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3);
-    }
-    .hero-title {
-        color: white;
-        font-size: 1.4rem;
-        font-weight: 400;
-        margin-top: 0.5rem;
-        margin-bottom: 1rem;
-        text-align: center;
-    }
-    
-    .hero-subtitle {
-        color: #f0f9ff;
-        font-size: 1rem;
-        text-align: center;
-        font-weight: 300;
-        margin-bottom: 0.5rem;
-    }
-    
-    /* Compact card styling */
-    .prompt-card {
-        background: #1f2937;
-        padding: 1rem;
-        border-radius: 10px;
-        border-left: 4px solid;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        margin-bottom: 0.8rem;
-        transition: transform 0.2s, box-shadow 0.2s;
-        height: 100%;
-    }
-    
-    .prompt-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(6, 182, 212, 0.4);
-    }
-    
-    .card-conservative {
-        border-left-color: #10b981;
-    }
-    
-    .card-balanced {
-        border-left-color: #3b82f6;
-    }
-    
-    .card-aggressive {
-        border-left-color: #ef4444;
-    }
-    
-    .card-sector {
-        border-left-color: #f59e0b;
-    }
-    
-    .card-title {
-        font-size: 1rem;
-        font-weight: 700;
-        margin-bottom: 0.4rem;
-        color: #06b6d4;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .card-emoji {
-        font-size: 1.3rem;
-    }
-    
-    .card-description {
-        color: #9ca3af;
-        margin-bottom: 0.6rem;
-        line-height: 1.4;
-        font-size: 0.85rem;
-    }
-    
-    .example-prompt {
-        background: #111827;
-        padding: 0.6rem;
-        border-radius: 6px;
-        font-family: 'Courier New', monospace;
-        font-size: 0.75rem;
-        color: #d1d5db;
-        border: 1px solid #374151;
-    }
-    
-    .field-label {
-        font-weight: 600;
-        color: #06b6d4;
-    }
-    
-    /* Section header */
-    .section-header {
-        color: #06b6d4;
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 0.8rem;
-        margin-top: 0.5rem;
-    }
-    
-    /* Tips styling - compact */
-    .tip-box {
-        background: #1f2937;
-        padding: 0.8rem;
-        border-radius: 8px;
-        border-left: 3px solid #06b6d4;
-        margin-bottom: 0.5rem;
-    }
-    
-    .tip-title {
-        color: #06b6d4;
-        font-weight: 600;
-        font-size: 0.9rem;
-        margin-bottom: 0.3rem;
-    }
-    
-    .tip-text {
-        color: #9ca3af;
-        font-size: 0.8rem;
-        line-height: 1.3;
-    }
-</style>
-""", unsafe_allow_html=True)
+st.markdown("<div class='cards-container'>", unsafe_allow_html=True)
 
-#Sidebar
-st.sidebar.markdown("""
-<style>
-/* Sidebar header */
-.sidebar-header {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.6rem 0.2rem 0.8rem 0.2rem;
-    border-bottom: 1px solid #2d3748;
-    margin-bottom: 0.6rem;
-}
-
-/* Logo */
-.sidebar-logo img {
-    height: 30px;
-    width: auto;
-}
-
-/* Title */
-.sidebar-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #06b6d4;
-    letter-spacing: 0.6px;
-    white-space: nowrap;
-}
-</style>
-
-<div class="sidebar-header">
-    <div class="sidebar-logo">
-        <img src="D:\crewai\niveshwala\src\logo.png" />
-    </div>
-    <div class="sidebar-title">Niveshwallah</div>
-</div>
-""", unsafe_allow_html=True)
-
-
-# Hero Section - Compact
-st.markdown("""
-<div class="hero-section">
-    <h1 class="hero-title">📈 NIVESHWALLAH</h1>
-    <p class="hero-subtitle">Analyze. Plan. Grow — Make smarter investment decisions with AI-powered insights</p>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown('<p class="section-header">📋 Example Scenarios - Choose Your Profile</p>', unsafe_allow_html=True)
-
-card_col1, card_col2, card_col3, card_col4 = st.columns(4)
-
-with card_col1:
-    st.markdown("""
-    <div class="prompt-card card-conservative">
-        <div class="card-title"><span class="card-emoji">🛡️</span> Conservative Investor</div>
-        <div class="card-description">
-            Stable, low-risk investments with steady returns.
+row1_col1, row1_col2 = st.columns(2)
+with row1_col1:
+    st.markdown(
+        """
+        <div class="prompt-card">
+            <div class="card-title">Where should I invest?</div>
+            <div class="card-text">
+                I am new to investing. I live in India and want to invest for the long term with low risk.
+                Where should I start?
+            </div>
         </div>
-        <div class="example-prompt">
-            <strong class="field-label">Symbol:</strong> RELIANCE.NS<br>
-            <strong class="field-label">Topic:</strong> Dividend analysis<br>
-            <strong class="field-label">Sector:</strong> Energy<br>
-            <strong class="field-label">Horizon:</strong> long-term<br>
-            <strong class="field-label">Risk:</strong> low
+        """,
+        unsafe_allow_html=True
+    )
+
+with row1_col2:
+    st.markdown(
+        """
+        <div class="prompt-card">
+            <div class="card-title">Analyze a stock for me</div>
+            <div class="card-text">
+                Analyze TCS stock for long-term investment. Include risks, growth potential,
+                and the current outlook for 2026.
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """,
+        unsafe_allow_html=True
+    )
 
-with card_col2:
-    st.markdown("""
-    <div class="prompt-card card-balanced">
-        <div class="card-title"><span class="card-emoji">⚖️</span> Balanced Portfolio</div>
-        <div class="card-description">
-            Balance between growth and stability with moderate risk.
+st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+
+row2_col1, row2_col2 = st.columns(2)
+with row2_col1:
+    st.markdown(
+        """
+        <div class="prompt-card">
+            <div class="card-title">Is this investment safe?</div>
+            <div class="card-text">
+                I am considering investing in the technology sector in India.
+                Is it safe for a medium-risk investor right now?
+            </div>
         </div>
-        <div class="example-prompt">
-            <strong class="field-label">Symbol:</strong> HDFCBANK.NS<br>
-            <strong class="field-label">Topic:</strong> Q2 earnings analysis<br>
-            <strong class="field-label">Sector:</strong> Finance<br>
-            <strong class="field-label">Horizon:</strong> mid-term<br>
-            <strong class="field-label">Risk:</strong> medium
+        """,
+        unsafe_allow_html=True
+    )
+
+with row2_col2:
+    st.markdown(
+        """
+        <div class="prompt-card">
+            <div class="card-title">Help me plan my investment</div>
+            <div class="card-text">
+                I want to invest for the next 5-10 years with moderate risk.
+                Suggest a balanced investment plan suitable for India.
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """,
+        unsafe_allow_html=True
+    )
 
-with card_col3:
-    st.markdown("""
-    <div class="prompt-card card-aggressive">
-        <div class="card-title"><span class="card-emoji">🚀</span> Aggressive Growth</div>
-        <div class="card-description">
-            High-risk, high-reward growth opportunities.
-        </div>
-        <div class="example-prompt">
-            <strong class="field-label">Symbol:</strong> ZOMATO.NS<br>
-            <strong class="field-label">Topic:</strong> Market expansion<br>
-            <strong class="field-label">Sector:</strong> Technology<br>
-            <strong class="field-label">Horizon:</strong> short-term<br>
-            <strong class="field-label">Risk:</strong> high
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
+st.markdown("<script>window.scrollTo(0, document.body.scrollHeight);</script>", unsafe_allow_html=True)
 
-with card_col4:
-    st.markdown("""
-    <div class="prompt-card card-sector">
-        <div class="card-title"><span class="card-emoji">🔍</span> Sector Research</div>
-        <div class="card-description">
-            Deep dive into specific sectors/industries.
-        </div>
-        <div class="example-prompt">
-            <strong class="field-label">Symbol:</strong> TCS.NS<br>
-            <strong class="field-label">Topic:</strong> IT sector trends<br>
-            <strong class="field-label">Sector:</strong> IT<br>
-            <strong class="field-label">Horizon:</strong> mid-term<br>
-            <strong class="field-label">Risk:</strong> medium
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
 
-# Quick Tips section
-
-tip_col1, tip_col2, tip_col3 = st.columns(3)
-
-with tip_col1:
-    st.markdown("""
-    <div class="tip-box">
-        <div class="tip-title">📊 Use Exact Symbols</div>
-        <div class="tip-text">For Indian stocks, add .NS (e.g., INFY.NS). For US stocks use AAPL, TSLA, etc.</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with tip_col2:
-    st.markdown("""
-    <div class="tip-box">
-        <div class="tip-title">🎯 Be Specific</div>
-        <div class="tip-text">Clear topics get better AI insights. Include specific areas like earnings, risks, or trends.</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with tip_col3:
-    st.markdown("""
-    <div class="tip-box">
-        <div class="tip-title">⏰ Match Your Timeline</div>
-        <div class="tip-text">Align horizon with your actual investment goals for accurate recommendations.</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-def get_user_by_phone(phone):
-    # find_one is MongoDB built in function
-    return users_collection.find_one({'phone':phone})
-
+# Section4 - DB Helper Functions
 def add_user(name, phone, email, age):    
-    user = get_user_by_phone(phone)
-    if user:
-        st.session_state["phone"] = phone
-        return 'User {} already available in the System with {}.'.format(name, phone)
     user = {
                 'name': name,
                 'phone': phone,
@@ -331,7 +193,29 @@ def add_user(name, phone, email, age):
     if result.inserted_id:
         return '{} added to the system with phone: {}'.format(name, phone)
     
-# Section5 - DB Helper Functions
+# def update_user(name, phone, email, age):
+#     result = users_collection.update_one(
+#         {"phone": phone},  # FILTER
+#         {
+#             "$set": {
+#                 "name": name,
+#                 "email": email,
+#                 "age": age,
+#                 "updated_on": datetime.now()
+#             }
+#         }
+#     )
+
+#     st.session_state["phone"] = phone
+
+#     if result.matched_count == 0:
+#         return "User not found."
+
+#     if result.modified_count == 1:
+#         return f"{name} updated successfully."
+
+#     return "No changes were made."
+
 def kickoff_crew_ai(symbol: str, topic: str, sector: str, region: str, investment_horizon: str, risk_profile: str, current_year: str):
 
     """
@@ -344,7 +228,7 @@ def kickoff_crew_ai(symbol: str, topic: str, sector: str, region: str, investmen
     'region': region,
     'investment_horizon': investment_horizon,
     'risk_profile': risk_profile,
-    'current_year': (datetime.now().year)
+    'current_year': current_year
 }
 
     try:
@@ -359,14 +243,14 @@ def kickoff_crew_ai(symbol: str, topic: str, sector: str, region: str, investmen
     return raw_output
 
 
-# Section6 - Streamlit Session State
+# Section 5 - Streamlit Session State
 # over here, the list of messages is temporary
 # this list can also be used to save the data in a file (offline)
 # this list can also be used to save the data in mongo db (online)
 if 'messages' not in st.session_state:
     st.session_state.messages = []
     
-# Section7 - Print all the messages in the Session State (Chat History)
+# Section 6 - Print all the messages in the Session State (Chat History)
 for message in st.session_state.messages:
     if message['role'] == 'user':    
         with st.chat_message(message['role']):
@@ -376,7 +260,7 @@ for message in st.session_state.messages:
             st.markdown(message['content'])
 
 
-# Section8 - Setup Open AI Function Tools
+# Section 7 - Setup Open AI Function Tools
 def ai_response(user_input):
     
     tools = [
@@ -417,23 +301,41 @@ def ai_response(user_input):
             }
         }
     }
+    # {
+    #     "type": "function",
+    #         "function":{
+    #             "name": "update_user",
+    #                 "description": "Update an existing user in database",
+    #                     "parameters": {
+    #                         "type": "object",
+    #                         "properties": {
+    #                             "name": {"type": "string"},
+    #                             "phone": {"type": "string"},
+    #                             "email": {"type": "string"},
+    #                             "age": {"type": "number"},
+    #                 },
+    #             "required": ["name", "phone", "email", "age"],
+    #         }
+    #     }
+    # }
 ]
 
     role_definition = """
-You are a highly skilled financial research analyst with deep expertise in stock markets, 
-company fundamentals, technical analysis, and sector-specific trends. 
-Your role is to analyze the given stock symbol, research topic, sector, and region 
-to produce actionable investment insights.
+        You are a highly skilled financial research analyst with deep expertise in stock markets, 
+        company fundamentals, technical analysis, and sector-specific trends. 
+        Your role is to analyze the given stock symbol, research topic, sector, and region 
+        to produce actionable investment insights.
 
-Guidelines:
-- Always tailor insights to the specified investment horizon (short, mid, or long term).
-- Adjust recommendations based on the risk profile (low, medium, high).
-- When data is missing (like sector or topic), intelligently infer or focus on general analysis.
-- Use professional, concise, and structured language.
-- Provide a summary, key risks, and potential opportunities.
-- Output should be clear enough for an investor to make a decision.
-"""
-    # Section3 - OpenAI Setup
+        Guidelines:
+        - Always tailor insights to the specified investment horizon (short, mid, or long term).
+        - Adjust recommendations based on the risk profile (low, medium, high).
+        - When data is missing (like sector or topic), intelligently infer or focus on general analysis.
+        - Use professional, concise, and structured language.
+        - Provide a summary, key risks, and potential opportunities.
+        - Output should be clear enough for an investor to make a decision.
+        """
+    
+    # Section 8 - OpenAI Setup
     openai_client = OpenAI()
     selected_model = 'gpt-4o-mini'
     
@@ -474,61 +376,21 @@ Guidelines:
     else:
         return "I cannot process your input. please try agian !"
     
-# Section9 - Streamlit Chat UI
-# SIDEBAR SETTINGS
-st.sidebar.title("Previous Chats")
+# Section 9 - Streamlit Chat UI
 phone = st.session_state.get("phone", None)
-
-if not phone:
-   st.sidebar.info("Start chatting to create history")
-else:
-    # get all chat sessions for phone
-    sessions = list(chat_collection.aggregate([
-        {"$match": {"phone": phone}},
-        {"$group": {
-            "_id": "$chat_id", 
-            "created_at": {"$first": "$created_at"} 
-        }},
-        {"$sort": {"created_at": -1}}  
-    ]))
-
-    # for new chat
-    if st.sidebar.button("New Chat"):
-        st.session_state["chat_id"] = str(uuid.uuid4())
-        st.session_state["messages"] = []
-        st.rerun()
-    # show existing chats
-    options = [(s["_id"], s["created_at"].strftime("%b %d, %H:%M")) for s in sessions]
-    selected = st.sidebar.radio(
-        "select a chat",
-        options,
-        format_func= lambda x: x[1]
-    )
-    chat_id = selected[0] if selected else None
-
-    # chat_id creation
-    if "chat_id" not in st.session_state:
-        st.session_state["chat_id"] = selected or str(uuid.uuid4())
-
-    # load messaging when switching
-    if "message" not in st.session_state or selected != st.session_state["chat_id"]:
-        st.session_state["chat_id"] = selected 
-        history = list(chat_collection.find({
-            "phone": phone, "chat_id": st.session_state["chat_id"]
-        }))
-        st.session_state["message"] = [
-            {"role": message["role"], "content": message["content"]} for message in history
-        ]
-
+if "is_generating" not in st.session_state:
+    st.session_state.is_generating = False
 
 # CHAT UI
-user_input = st.chat_input('Type Your Question. Enter is Send..')
-if user_input: # user_input if not None
-    # st.markdown(user_input)
+user_input = st.chat_input("Type your question. Press Enter to send.",
+    disabled=st.session_state.is_generating)
+
+if user_input and not st.session_state.is_generating:
+    st.session_state.is_generating = True
     if "chat_id" not in st.session_state:
         st.session_state["chat_id"] = str(uuid.uuid4())
 
-    message = {
+    user_message = {
         'phone': phone,
         'chat_id': st.session_state["chat_id"],
         'role': 'user',
@@ -537,28 +399,34 @@ if user_input: # user_input if not None
     }
 
     # Insert the above message in MongoDB (Input By User)
-    chat_collection.insert_one(message)
-    
-    st.session_state.messages.append(message)
-    with st.chat_message(message['role']):
-        st.markdown(message['content'])
+    chat_collection.insert_one(user_message)
+    st.session_state.messages.append(user_message)
 
-    message = {
+    with st.chat_message("user"):
+        st.markdown(user_input)
+
+    with st.chat_message("assistant"):
+        placeholder = st.empty()
+
+        with st.spinner("WealthForge is thinking..."):
+            ai_text = ai_response(user_input)
+
+            typing_text = ""
+            for char in ai_text:
+                typing_text += char
+                placeholder.markdown(typing_text)
+                time.sleep(0.01)
+
+    assistant_message = {
         'phone': phone,
         'chat_id': st.session_state["chat_id"],
         'role': 'assistant',
-        'content': ai_response(user_input),
+        'content': ai_text,
         'created_at': datetime.now()
     }
     
     # Insert the above message in MongoDB (Response from AI)
-    chat_collection.insert_one(message)
+    chat_collection.insert_one(assistant_message)
+    st.session_state.messages.append(assistant_message)
 
-    st.session_state.messages.append(message)
-    with st.chat_message(message['role']):
-        typing_placeholder = st.empty()
-        typing_text = ''
-        for character in message['content']:
-            typing_text += character
-            typing_placeholder.markdown(typing_text)
-            time.sleep(0.01)
+    st.session_state.is_generating = False
